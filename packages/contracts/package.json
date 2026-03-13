@@ -1,0 +1,11 @@
+{
+  "name": "@ai-writing-studio/contracts",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "echo contracts build pending",
+    "test": "echo contracts test pending",
+    "typecheck": "echo contracts typecheck pending"
+  }
+}

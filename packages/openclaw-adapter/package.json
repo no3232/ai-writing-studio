@@ -1,0 +1,11 @@
+{
+  "name": "@ai-writing-studio/openclaw-adapter",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "echo openclaw-adapter build pending",
+    "test": "echo openclaw-adapter test pending",
+    "typecheck": "echo openclaw-adapter typecheck pending"
+  }
+}

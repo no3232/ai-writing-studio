@@ -1,0 +1,11 @@
+{
+  "name": "@ai-writing-studio/backend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "echo backend build pending",
+    "test": "echo backend test pending",
+    "typecheck": "echo backend typecheck pending"
+  }
+}
