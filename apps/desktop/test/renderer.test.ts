@@ -1,7 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
 import { bootstrapBrowseRenderer } from '../src/renderer.js';
+
+test('renderer entrypoint exists for vite to load', () => {
+  const rendererEntryUrl = new URL('../src/renderer-main.ts', import.meta.url);
+
+  assert.equal(existsSync(fileURLToPath(rendererEntryUrl)), true);
+});
 
 test('bootstrapBrowseRenderer creates a root element and mounts the browse UI', () => {
   const appended: unknown[] = [];

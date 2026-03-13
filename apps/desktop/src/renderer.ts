@@ -56,7 +56,3 @@ export function ensureBrowseRoot(document: Document): HTMLElement {
 function readConfigValue(value: string | undefined, fallback: string): string {
   return value && value.length > 0 ? value : fallback;
 }
-
-if (typeof document !== 'undefined') {
-  bootstrapBrowseRenderer();
-}
