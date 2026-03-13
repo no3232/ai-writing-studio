@@ -7,7 +7,7 @@ import { renderTopBar } from './components/top-bar.js';
 export function renderAppShell(state?: BrowseState): string {
   return [
     '<div data-region="workbench-shell" class="ui-workbench">',
-    renderTopBar(),
+    renderTopBar(state),
     renderNavigationPanel(state),
     renderEditorPanel(state),
     renderAiPanel(),

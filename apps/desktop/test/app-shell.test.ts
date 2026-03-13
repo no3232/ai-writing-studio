@@ -85,3 +85,33 @@ test('editor panel renders selected document draft fields and save state', () =>
   assert.match(editorHtml, /Save state: dirty/);
   assert.match(editorHtml, /data-action="create-document"/);
 });
+
+test('workbench shell shows connection status, save status, and ai placeholder panel', () => {
+  const html = renderAppShell({
+    status: 'ready',
+    saveState: 'saved',
+    projects: [{ id: 'project-b', name: 'Project B' }],
+    selectedProjectId: 'project-b',
+    documents: [{ id: 'chapter-1', title: 'Chapter 1', kind: 'chapter' }],
+    selectedDocumentId: 'chapter-1',
+    documentDetail: {
+      id: 'chapter-1',
+      title: 'Chapter 1',
+      kind: 'chapter',
+      content: '# Chapter 1',
+    },
+    draftTitle: 'Chapter 1',
+    draftContent: '# Chapter 1',
+  } satisfies BrowseState);
+
+  const topBarHtml = html.match(/<[^>]+class="[^"]*ui-top-bar[^"]*"[\s\S]*?<\/section>/)?.[0] ?? html;
+  const aiPanelHtml = region(html, 'ai-panel');
+
+  assert.match(topBarHtml, /Connection/i);
+  assert.match(topBarHtml, /Ready/i);
+  assert.match(topBarHtml, /Save status/i);
+  assert.match(topBarHtml, /Saved/i);
+  assert.match(aiPanelHtml, /AI Workspace/i);
+  assert.match(aiPanelHtml, /Placeholder/i);
+  assert.doesNotMatch(aiPanelHtml, /Run prompt|Generate|Ask AI/i);
+});

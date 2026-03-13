@@ -1,4 +1,3 @@
-import { renderButton } from './ui/button.js';
 import { renderCard } from './ui/card.js';
 
 export function renderAiPanel(): string {
@@ -6,11 +5,15 @@ export function renderAiPanel(): string {
     '<aside data-region="ai-panel" class="ui-panel-stack">',
     renderCard({
       title: 'AI Workspace',
-      description: 'Reserved for assistant tools, prompts, and future workflow support.',
+      description: 'Placeholder panel reserved for future assistant tools and workflow support.',
       content: [
-        '<div class="ui-column">',
-        '<p class="ui-text-muted">This area stays intentionally lightweight in Chunk 2.</p>',
-        renderButton({ label: 'Prompt presets', variant: 'secondary' }),
+        '<div class="ui-column" style="gap:12px;">',
+        '<p class="ui-text-muted">Placeholder only — no AI actions are wired in this chunk.</p>',
+        '<ul class="ui-text-muted" style="margin:0;padding-left:18px;">',
+        '<li>Prompt drafts and presets</li>',
+        '<li>Context tools and references</li>',
+        '<li>Workflow helpers coming later</li>',
+        '</ul>',
         '</div>',
       ].join(''),
     }),
