@@ -1,0 +1,12 @@
+{
+  "name": "ai-writing-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Electron-based story workbench for markdown worldbuilding and deterministic story-engine slices.",
+  "packageManager": "pnpm@10.13.1",
+  "type": "module",
+  "scripts": {
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck"
+  }
+}
