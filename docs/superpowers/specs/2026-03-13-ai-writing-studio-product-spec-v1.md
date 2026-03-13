@@ -1,222 +1,222 @@
-# AI Writing Studio Product Spec v1
+# AI Writing Studio 제품 스펙 v1
 
-## 1. Product Definition
-AI Writing Studio is an AI-assisted fiction workbench that combines writing, setting management, plot management, and relationship exploration into one product.
+## 1. 제품 정의
+AI Writing Studio는 집필, 설정 관리, 플롯 관리, 관계 탐색을 하나의 제품 안에 묶는 **AI 보조 소설 워크벤치**다.
 
-It is not just a text editor and not just an AI chat tool. It is a multi-mode writing workbench for long-form or setting-heavy fiction.
+이 제품은 단순한 텍스트 에디터도 아니고, 단순한 AI 채팅 도구도 아니다. 장편 또는 설정 밀도가 높은 소설 작업을 위한 **멀티모드 집필 워크벤치**다.
 
-## 2. Why This Product Exists
-Existing tools usually separate these activities:
-- chapter writing
-- setting and character document management
-- plot and event planning
-- AI-assisted writing help
-- post-writing continuity updates
+## 2. 왜 이 제품이 필요한가
+기존 도구들은 보통 다음 활동을 각각 분리해서 다루게 만든다.
+- 챕터 집필
+- 설정 및 캐릭터 문서 관리
+- 플롯과 사건 계획
+- AI 보조 집필
+- 집필 이후 연속성/설정 반영 정리
 
-As a result, writers move between multiple disconnected tools. AI support is also usually detached from the writer’s actual setting documents and project context.
+그 결과 작가는 서로 분리된 여러 도구를 오가야 한다. 또한 AI 보조 역시 실제 설정 문서나 프로젝트 문맥과 분리되어 동작하는 경우가 많다.
 
-AI Writing Studio exists to unify those workflows into one operating environment.
+AI Writing Studio는 이런 분산된 흐름을 하나의 작업 환경으로 통합하기 위해 존재한다.
 
-## 3. Core User
-Primary user:
-- genre fiction writers with heavy setting/context management needs
-- writers who want to actively use AI for scene help, draft assistance, and continuity maintenance
+## 3. 핵심 사용자
+주요 사용자는 다음과 같다.
+- 설정 및 세계관 관리 부담이 큰 장르 소설 작가
+- 장면 보조, 초안 작성, 연속성 유지에 AI를 적극적으로 활용하고 싶은 작가
 
-## 4. Core User Situations
-This product should be especially useful in these moments:
-1. when the writer is actively drafting a chapter
-2. when the writer gets stuck and needs help with the next scene, paragraph, or development
-3. when the writer finishes a chapter and needs to update project knowledge/continuity
-4. when the writer needs to inspect plot flow or relationships
-5. when the writer needs to quickly reference worldbuilding documents while drafting
+## 4. 핵심 사용자 상황
+이 제품은 특히 다음 순간에 가장 큰 가치를 제공해야 한다.
+1. 작가가 실제로 한 챕터를 집필하고 있을 때
+2. 다음 장면, 문단, 전개가 막혀 AI 도움이 필요할 때
+3. 챕터를 마친 뒤 프로젝트 지식/연속성을 갱신해야 할 때
+4. 플롯 흐름이나 관계 구조를 점검해야 할 때
+5. 집필 중 세계관 문서를 빠르게 참조해야 할 때
 
-## 5. Core Product Modes
-These are first-class modes, not secondary utilities.
+## 5. 핵심 제품 모드
+이 모드들은 부가 기능이 아니라, 제품을 구성하는 **일급 작업 모드**다.
 
-### 5.1 Writing Mode
-- primary drafting space
-- central editor is the main working surface
-- right AI panel helps during drafting
+### 5.1 집필 모드
+- 기본 집필 공간
+- 중앙 편집기가 핵심 작업 표면
+- 우측 AI 패널이 집필 중 보조 역할을 수행
 
-### 5.2 Knowledge / Setting Mode
-- character documents
-- setting documents
-- event documents
-- optional expansion to locations, rules, factions
+### 5.2 지식 / 설정 모드
+- 캐릭터 문서
+- 설정 문서
+- 사건 문서
+- 필요 시 위치, 규칙, 세력 등으로 확장 가능
 
-### 5.3 Plot / Event Mode
-- chapter/event flow
-- plot structure
-- continuity and progression overview
+### 5.3 플롯 / 사건 모드
+- 챕터/사건 흐름
+- 플롯 구조
+- 연속성과 전개 진행 상황 개요
 
-### 5.4 Relationship / Exploration Mode
-- graph-style view of characters, events, settings, and their links
-- exploration and consistency support
+### 5.4 관계 / 탐색 모드
+- 캐릭터, 사건, 설정 간 링크를 그래프 형태로 탐색
+- 구조 파악과 일관성 점검 지원
 
-## 6. AI Assistance Model
-AI is a shared system across the workbench, not a separate product.
+## 6. AI 보조 모델
+AI는 워크벤치 전반에 걸친 공통 시스템이지, 별도 제품이 아니다.
 
-### 6.1 AI panel structure
-AI is presented as a common right-side panel, but its content changes by mode.
+### 6.1 AI 패널 구조
+AI는 공통 우측 패널로 제시되지만, 패널 내용은 모드에 따라 달라진다.
 
-### 6.2 Writing mode AI
-- next paragraph suggestion
-- scene suggestion
-- dialogue or tone assistance
+### 6.2 집필 모드의 AI
+- 다음 문단 제안
+- 장면 제안
+- 대사/톤 보조
 
-### 6.3 Plot mode AI
-- plot gap detection
-- sequencing help
-- tension and payoff suggestions
+### 6.3 플롯 모드의 AI
+- 플롯 구멍 탐지
+- 순서/배치 보조
+- 긴장감과 회수 포인트 제안
 
-### 6.4 Relationship mode AI
-- possible missing links
-- relationship inconsistencies
-- structural interpretation help
+### 6.4 관계 모드의 AI
+- 빠진 연결 후보 탐지
+- 관계상 모순 점검
+- 구조 해석 보조
 
-### 6.5 Setting mode AI
-- setting update draft generation
-- contradiction detection
-- organization/helpful rewrite proposals
+### 6.5 설정 모드의 AI
+- 설정 반영 초안 생성
+- 충돌 탐지
+- 정리/재작성 제안
 
-## 7. Core Experience Loop
-The core loop is:
-1. the writer drafts a chapter
-2. the writer asks AI for help when stuck
-3. AI responds using saved project knowledge and current chapter context
-4. the writer finishes the chapter
-5. AI generates setting/character/event update drafts based on what became newly true in the chapter
-6. the writer reviews and approves those updates
-7. the approved knowledge becomes the basis for future writing and AI suggestions
+## 7. 핵심 경험 루프
+핵심 루프는 다음과 같다.
+1. 작가가 챕터를 집필한다
+2. 막히면 AI에게 도움을 요청한다
+3. AI는 저장된 프로젝트 지식과 현재 챕터 문맥을 바탕으로 응답한다
+4. 작가가 챕터를 완성한다
+5. AI가 챕터에서 새롭게 사실이 된 내용을 바탕으로 설정/캐릭터/사건 반영 초안을 만든다
+6. 작가는 그 초안을 검토하고 승인한다
+7. 승인된 지식은 이후 집필과 AI 제안의 기반이 된다
 
-## 8. Document and Data Model
-### 8.1 Document types
-The product structurally distinguishes at least these document types:
-- chapter
-- character
-- setting
-- event
-- optional later extensions: location, rule, faction
+## 8. 문서 및 데이터 모델
+### 8.1 문서 타입
+제품은 최소한 다음 문서 타입을 구조적으로 구분한다.
+- 챕터
+- 캐릭터
+- 설정
+- 사건
+- 이후 확장 가능: 위치, 규칙, 세력
 
-### 8.2 Storage direction
-- setting-style documents are markdown-first
-- chapter documents are intended to become structured rich-text content (eventually Lexical-oriented)
+### 8.2 저장 방향
+- 설정 성격의 문서는 Markdown 우선
+- 챕터 문서는 구조화된 리치텍스트 콘텐츠를 지향하며, 장기적으로 Lexical 기반을 목표로 한다
 
-### 8.3 AI reference basis
-AI should primarily use the project’s saved markdown knowledge plus the current working chapter/context.
+### 8.3 AI 참조 기준
+AI는 기본적으로 프로젝트에 저장된 Markdown 지식과 현재 작업 중인 챕터/문맥을 주요 참조 대상으로 사용해야 한다.
 
-## 9. MVP Scope
-This MVP is not a toy prototype. It is the smallest version that still feels like the intended product.
+## 9. MVP 범위
+이 MVP는 장난감 수준의 프로토타입이 아니라, 제품의 정체성이 살아 있는 최소 단위다.
 
-MVP includes:
-- writing mode
-- knowledge/setting mode
-- plot/event mode
-- relationship/exploration mode
-- shared right AI panel
-- in-writing suggestion flow
-- post-chapter setting update draft flow
-- project/document navigation and reference support
+MVP에는 다음이 포함된다.
+- 집필 모드
+- 지식/설정 모드
+- 플롯/사건 모드
+- 관계/탐색 모드
+- 공통 우측 AI 패널
+- 집필 중 제안 흐름
+- 챕터 완료 후 설정 반영 초안 흐름
+- 프로젝트/문서 탐색 및 참조 지원
 
-MVP does not require:
-- fully automatic setting application without review
-- advanced collaboration
-- publishing workflow
-- full long-term version management
+MVP에 반드시 필요하지 않은 것:
+- 검토 없는 완전 자동 설정 반영
+- 고급 협업 기능
+- 출판 워크플로우
+- 장기 버전 관리 고도화
 
-## 10. UI Direction
-UI SOT is based on the provided reference images.
+## 10. UI 방향
+UI SOT는 사용자가 제공한 레퍼런스 이미지를 기준으로 한다.
 
-Working assumptions:
-- central writing/editor area is the main focus in writing mode
-- left side supports navigation and reference
-- right side is the shared AI assistance panel
-- plot and graph are distinct main modes, not hidden utilities
+작업 가정은 다음과 같다.
+- 집필 모드에서는 중앙 집필/편집 영역이 가장 중요한 포커스다
+- 좌측은 탐색과 참조를 지원한다
+- 우측은 공통 AI 보조 패널이다
+- 플롯과 그래프는 숨겨진 유틸리티가 아니라 독립된 주요 모드다
 
-## 11. Installation / Runtime Model
-### 11.1 Product shape
-The product is a desktop workbench application with a remote-first server model.
+## 11. 설치 / 실행 모델
+### 11.1 제품 형태
+이 제품은 **원격 연결 우선(remote-first)** 구조를 따르는 데스크톱 워크벤치 애플리케이션이다.
 
-### 11.2 Runtime structure
-The runtime is composed of three layers:
-1. **Desktop Client**
-   - the locally running Electron workbench application
-   - responsible for the writing UI, mode switching, navigation, graph/plot views, and AI panel presentation
-   - communicates only with the product backend APIs
+### 11.2 런타임 구조
+런타임은 다음 세 계층으로 구성된다.
+1. **데스크톱 클라이언트**
+   - 로컬에서 실행되는 Electron 기반 워크벤치 앱
+   - 집필 UI, 모드 전환, 탐색, 그래프/플롯 뷰, AI 패널 표시를 담당한다
+   - 제품 백엔드 API와만 통신한다
 2. **AI Writing Studio Backend**
-   - product-specific HTTP API server
-   - provides project/document/AI APIs in product terms
-   - owns product-domain logic such as document handling, AI action orchestration, and setting-update draft generation
-   - communicates internally with OpenClaw
+   - 제품 전용 HTTP API 서버
+   - 프로젝트/문서/AI 관련 API를 제품 도메인 용어로 제공한다
+   - 문서 처리, AI 액션 오케스트레이션, 설정 반영 초안 생성 같은 제품 도메인 로직을 담당한다
+   - 내부적으로 OpenClaw와 통신한다
 3. **OpenClaw Runtime**
-   - underlying runtime/execution layer for AI, tools, and context-aware operations
-   - not treated as the direct user-facing application API
+   - AI 실행, 도구 사용, 문맥 기반 연산을 담당하는 내부 런타임 계층
+   - 사용자가 직접 다루는 애플리케이션 API가 아니라 내부 실행 엔진에 가깝다
 
-### 11.3 Communication model
-The default communication path is:
+### 11.3 통신 모델
+기본 통신 흐름은 다음과 같다.
 
-**Desktop Client → AI Writing Studio Backend → OpenClaw Runtime**
+**데스크톱 클라이언트 → AI Writing Studio Backend → OpenClaw Runtime**
 
-This separation exists so the desktop client can depend on stable product APIs rather than OpenClaw’s internal execution structure.
+이 분리는 데스크톱 클라이언트가 OpenClaw 내부 실행 구조가 아니라, 안정된 제품 API에 의존하도록 하기 위해 존재한다.
 
-### 11.4 Remote-first principle
-The product assumes a remote-first connection model.
+### 11.4 원격 연결 우선 원칙
+이 제품은 원격 연결 우선 구조를 따른다.
 
-That means:
-- the user runs the desktop client locally
-- the backend + OpenClaw side runs on a prepared server environment
-- the desktop app connects to that environment over HTTP APIs
+즉:
+- 사용자는 데스크톱 클라이언트를 로컬에서 실행하고
+- 백엔드 + OpenClaw 쪽은 준비된 서버 환경에서 실행되며
+- 데스크톱 앱은 해당 환경에 HTTP API로 연결한다
 
-The product does not assume that the full AI/runtime stack is embedded directly inside the desktop client.
+제품은 AI/런타임 전체를 데스크톱 클라이언트 안에 직접 포함하는 구조를 기본 전제로 두지 않는다.
 
-### 11.5 Onboarding principle
-The default onboarding flow is:
-1. the user installs the desktop app
-2. the app instructs the user to prepare or choose an OpenClaw-based server
-3. the user connects/logs in/pairs with that server
-4. the app starts work against that connected environment
+### 11.5 온보딩 원칙
+기본 온보딩 흐름은 다음과 같다.
+1. 사용자가 데스크톱 앱을 설치한다
+2. 앱이 OpenClaw 기반 서버를 준비하거나 선택하도록 안내한다
+3. 사용자가 그 서버에 연결/로그인/페어링한다
+4. 앱이 해당 환경을 대상으로 작업을 시작한다
 
-The initial product may assume that OpenClaw is already running before connection.
+초기 제품은 OpenClaw가 이미 실행 중인 상태를 전제로 할 수 있다.
 
-### 11.6 Future installation direction
-Future versions may support a more guided setup flow such as:
-- companion server installation wizard
-- connection to an already-running OpenClaw server
-- packaged backend + OpenClaw server bundle
+### 11.6 향후 설치 확장 방향
+향후 버전에서는 다음과 같은 설치/연결 흐름을 지원할 수 있다.
+- Companion Server 설치 마법사
+- 이미 실행 중인 OpenClaw 서버 연결
+- 백엔드 + OpenClaw 서버 번들 패키징
 
-However, the top-level product model still remains:
+하지만 상위 제품 구조는 여전히 다음을 유지한다.
 
-**Desktop Client + Product Backend + OpenClaw Runtime**
+**데스크톱 클라이언트 + 제품 백엔드 + OpenClaw Runtime**
 
-### 11.7 Installation details deferred to lower-level specs
-The following are intentionally deferred to dedicated detailed specs:
-- authentication model
-- pairing/login/token flow
-- health check and reconnect behavior
-- local companion installation automation
-- backend deployment model
-- API security and trust boundaries
-- differences between development and user runtime environments
+### 11.7 설치 상세는 하위 스펙으로 이관
+아래 항목은 상위 스펙에서는 원칙만 정의하고, 상세는 별도 문서에서 다룬다.
+- 인증 방식
+- 페어링/로그인/토큰 흐름
+- 헬스체크 및 재연결 동작
+- 로컬 companion 설치 자동화 범위
+- 백엔드 배포 모델
+- API 보안 및 신뢰 경계
+- 개발 환경과 사용자 실행 환경의 차이
 
-## 12. Domain Breakdown for Detailed Specs
-Follow-up detailed specs should be written separately for:
-1. writing mode
-2. setting/knowledge mode
-3. plot/event mode
-4. relationship/exploration mode
-5. AI panel and AI action model
-6. setting-update draft workflow
-7. runtime/install/connect flow
-8. backend/data/API architecture
+## 12. 하위 상세 스펙 분리 기준
+후속 상세 스펙은 다음 단위로 분리해 작성한다.
+1. 집필 모드
+2. 설정/지식 모드
+3. 플롯/사건 모드
+4. 관계/탐색 모드
+5. AI 패널 및 AI 액션 모델
+6. 설정 반영 초안 워크플로우
+7. 런타임/설치/연결 흐름
+8. 백엔드/데이터/API 아키텍처
 
-## 13. Backend-First Direction
-Implementation should be reorganized around backend/domain/API stability before major frontend refinement.
+## 13. 백엔드 우선 방향
+구현은 대규모 프론트엔드 다듬기보다, 백엔드/도메인/API 안정화를 먼저 기준으로 재정렬해야 한다.
 
-The backend should define:
-- project/document contracts
-- document type semantics
-- AI request/response contracts by mode
-- setting update draft generation contract
-- runtime connection and execution model
+백엔드는 최소한 다음을 먼저 정의해야 한다.
+- 프로젝트/문서 계약
+- 문서 타입 의미론
+- 모드별 AI 요청/응답 계약
+- 설정 반영 초안 생성 계약
+- 런타임 연결 및 실행 모델
 
-The frontend should follow the product SOT and backend contracts, rather than leading architecture decisions first.
+프론트엔드는 제품 SOT와 백엔드 계약을 따르는 방향으로 발전해야 하며, 프론트가 먼저 아키텍처 결정을 주도하지 않도록 한다.
