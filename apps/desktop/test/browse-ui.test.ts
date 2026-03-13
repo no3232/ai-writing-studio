@@ -307,3 +307,30 @@ test('renderBrowseView shows a create button and editable title/content fields f
   assert.match(html, /name="document-content"/);
   assert.match(html, /data-action="save-document"/);
 });
+
+test('renderBrowseView keeps project and document browse controls in the navigation region', () => {
+  const html = renderBrowseView({
+    status: 'ready',
+    saveState: 'idle',
+    projects: [
+      { id: 'project-a', name: 'Project A' },
+      { id: 'project-b', name: 'Project B' },
+    ],
+    selectedProjectId: 'project-b',
+    documents: [{ id: 'chapter-1', title: 'Chapter 1', kind: 'chapter' }],
+    selectedDocumentId: 'chapter-1',
+    documentDetail: {
+      id: 'chapter-1',
+      title: 'Chapter 1',
+      kind: 'chapter',
+      content: '# Chapter 1',
+    },
+    draftTitle: 'Chapter 1',
+    draftContent: '# Chapter 1',
+  });
+
+  assert.match(html, /data-region="navigation-panel"[\s\S]*data-project-id="project-b" aria-current="true"/);
+  assert.match(html, /data-region="navigation-panel"[\s\S]*data-document-id="chapter-1" aria-current="true"/);
+  assert.match(html, /data-region="navigation-panel"[\s\S]*data-action="create-document"/);
+  assert.doesNotMatch(html, /data-region="editor-panel"[\s\S]*data-document-id=/);
+});

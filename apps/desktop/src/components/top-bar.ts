@@ -9,6 +9,7 @@ export function renderTopBar(): string {
       '<div>',
       '<p class="ui-kicker">Workbench</p>',
       '<strong>Top Bar</strong>',
+      '<h1>Remote project browser</h1>',
       '<p class="ui-text-muted">Desktop workbench shell with a minimal shadcn/ui-style baseline.</p>',
       '</div>',
       '<div class="ui-row">',

@@ -4,6 +4,7 @@ import type {
   ProjectSummary,
 } from '@ai-writing-studio/contracts';
 
+import { renderAppShell } from './app-shell.js';
 import { createProjectsClient, type CreateProjectsClientOptions, type ProjectsClient } from './project-documents.js';
 
 export type BrowseStatus = 'idle' | 'loading' | 'ready' | 'failed';
@@ -312,77 +313,7 @@ export function mountBrowseUi(options: MountBrowseUiOptions): void {
 }
 
 export function renderBrowseView(state: BrowseState): string {
-  return [
-    '<section style="display:grid;grid-template-columns:240px 240px 1fr;gap:16px;font-family:sans-serif;line-height:1.4;padding:16px;">',
-    '<header style="grid-column:1 / -1;">',
-    '<h1>Remote project browser</h1>',
-    `<p>Status: ${escapeHtml(state.status)}</p>`,
-    `<p>Save state: ${escapeHtml(state.saveState)}</p>`,
-    state.error ? `<p style="color:#b00020;">${escapeHtml(state.error)}</p>` : '',
-    '</header>',
-    renderProjectList(state),
-    renderDocumentList(state),
-    renderDocumentDetail(state),
-    '</section>',
-  ].join('');
-}
-
-function renderProjectList(state: BrowseState): string {
-  return [
-    '<section>',
-    '<h2>Projects</h2>',
-    '<ul style="list-style:none;padding:0;margin:0;display:grid;gap:8px;">',
-    ...state.projects.map((project) =>
-      `<li><button type="button" data-project-id="${escapeAttribute(project.id)}" aria-current="${String(
-        project.id === state.selectedProjectId,
-      )}" style="width:100%;text-align:left;padding:8px;">${escapeHtml(project.name)}</button></li>`,
-    ),
-    state.projects.length === 0 ? '<li>No projects</li>' : '',
-    '</ul>',
-    '</section>',
-  ].join('');
-}
-
-function renderDocumentList(state: BrowseState): string {
-  return [
-    '<section>',
-    '<h2>Documents</h2>',
-    state.selectedProjectId
-      ? '<p><button type="button" data-action="create-document">New document</button></p>'
-      : '',
-    '<ul style="list-style:none;padding:0;margin:0;display:grid;gap:8px;">',
-    ...state.documents.map((document) =>
-      `<li><button type="button" data-document-id="${escapeAttribute(document.id)}" aria-current="${String(
-        document.id === state.selectedDocumentId,
-      )}" style="width:100%;text-align:left;padding:8px;">${escapeHtml(
-        document.title,
-      )}</button></li>`,
-    ),
-    state.documents.length === 0 ? '<li>No documents</li>' : '',
-    '</ul>',
-    '</section>',
-  ].join('');
-}
-
-function renderDocumentDetail(state: BrowseState): string {
-  if (!state.documentDetail) {
-    return '<section><h2>Document</h2><p>Select a document to inspect its content.</p></section>';
-  }
-
-  return [
-    '<section>',
-    '<h2>Document</h2>',
-    `<p>Kind: ${escapeHtml(state.documentDetail.kind)}</p>`,
-    `<p>Save state: ${escapeHtml(state.saveState)}</p>`,
-    '<p><label>Title<br><input type="text" name="document-title" style="width:100%;box-sizing:border-box;" value="',
-    escapeAttribute(state.draftTitle ?? state.documentDetail.title),
-    '"></label></p>',
-    '<p><label>Content<br><textarea name="document-content" style="width:100%;min-height:320px;box-sizing:border-box;">',
-    escapeHtml(state.draftContent ?? state.documentDetail.content),
-    '</textarea></label></p>',
-    '<p><button type="button" data-action="save-document">Save</button></p>',
-    '</section>',
-  ].join('');
+  return renderAppShell(state);
 }
 
 function toFailedState(state: BrowseState, error: unknown): BrowseState {
@@ -410,15 +341,3 @@ function toDocumentSummary(document: DocumentDetail): DocumentSummary {
   };
 }
 
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
-}
-
-function escapeAttribute(value: string): string {
-  return escapeHtml(value);
-}
