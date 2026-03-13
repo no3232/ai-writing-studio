@@ -49,9 +49,6 @@ function renderDocumentsCard(state: BrowseState): string {
     title: 'Documents',
     description: state.selectedProjectId ? 'Browse documents in the selected project.' : 'Select a project to browse documents.',
     content: [
-      state.selectedProjectId
-        ? '<p><button data-ui="button" class="ui-button ui-button--default" type="button" data-action="create-document">New document</button></p>'
-        : '',
       '<ul style="list-style:none;padding:0;margin:0;display:grid;gap:8px;">',
       ...state.documents.map((document) =>
         `<li><button type="button" data-document-id="${escapeAttribute(document.id)}" aria-current="${String(

@@ -7,6 +7,11 @@ import {
   type BrowseClient,
 } from '../src/browse-ui.js';
 
+function region(html: string, regionName: string): string {
+  const match = html.match(new RegExp(`<[^>]+data-region="${regionName}"[\\s\\S]*?<\\/(?:aside|main)>`));
+  return match?.[0] ?? '';
+}
+
 function createClient(): BrowseClient {
   return {
     async listProjects() {
@@ -254,7 +259,7 @@ test('browse controller exposes failed save state when saving the selected docum
   assert.equal(controller.getState().error, 'Save failed');
 });
 
-test('renderBrowseView shows the current save state for the selected document', () => {
+test('renderBrowseView shows the current save state for the selected document in the editor panel', () => {
   const html = renderBrowseView({
     status: 'ready',
     saveState: 'dirty',
@@ -275,10 +280,10 @@ test('renderBrowseView shows the current save state for the selected document', 
     draftContent: '# Chapter 1',
   });
 
-  assert.match(html, /Save state: dirty/);
+  assert.match(region(html, 'editor-panel'), /Save state: dirty/);
 });
 
-test('renderBrowseView shows a create button and editable title/content fields for the selected document', () => {
+test('renderBrowseView shows create and save controls alongside editable draft fields in the editor panel', () => {
   const html = renderBrowseView({
     status: 'ready',
     saveState: 'idle',
@@ -299,16 +304,18 @@ test('renderBrowseView shows a create button and editable title/content fields f
     draftContent: '# Chapter 1',
   });
 
-  assert.match(html, /<h1>Remote project browser<\/h1>/);
-  assert.match(html, /Project B/);
-  assert.match(html, /data-project-id="project-b" aria-current="true"/);
-  assert.match(html, /data-action="create-document"/);
-  assert.match(html, /name="document-title"/);
-  assert.match(html, /name="document-content"/);
-  assert.match(html, /data-action="save-document"/);
+  const navigationHtml = region(html, 'navigation-panel');
+  const editorHtml = region(html, 'editor-panel');
+
+  assert.match(navigationHtml, /Project B/);
+  assert.match(navigationHtml, /data-project-id="project-b" aria-current="true"/);
+  assert.match(editorHtml, /data-action="create-document"/);
+  assert.match(editorHtml, /name="document-title"/);
+  assert.match(editorHtml, /name="document-content"/);
+  assert.match(editorHtml, /data-action="save-document"/);
 });
 
-test('renderBrowseView keeps project and document browse controls in the navigation region', () => {
+test('renderBrowseView keeps project and document browse controls in the navigation region while moving create into the editor region', () => {
   const html = renderBrowseView({
     status: 'ready',
     saveState: 'idle',
@@ -329,8 +336,12 @@ test('renderBrowseView keeps project and document browse controls in the navigat
     draftContent: '# Chapter 1',
   });
 
-  assert.match(html, /data-region="navigation-panel"[\s\S]*data-project-id="project-b" aria-current="true"/);
-  assert.match(html, /data-region="navigation-panel"[\s\S]*data-document-id="chapter-1" aria-current="true"/);
-  assert.match(html, /data-region="navigation-panel"[\s\S]*data-action="create-document"/);
-  assert.doesNotMatch(html, /data-region="editor-panel"[\s\S]*data-document-id=/);
+  const navigationHtml = region(html, 'navigation-panel');
+  const editorHtml = region(html, 'editor-panel');
+
+  assert.match(navigationHtml, /data-project-id="project-b" aria-current="true"/);
+  assert.match(navigationHtml, /data-document-id="chapter-1" aria-current="true"/);
+  assert.doesNotMatch(navigationHtml, /data-action="create-document"/);
+  assert.match(editorHtml, /data-action="create-document"/);
+  assert.doesNotMatch(editorHtml, /data-document-id=/);
 });
