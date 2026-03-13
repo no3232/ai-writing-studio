@@ -1,3 +1,4 @@
+import cors from '@fastify/cors';
 import Fastify, { type FastifyInstance } from 'fastify';
 
 import {
@@ -22,9 +23,26 @@ export interface BuildAppOptions {
   hostConnection: OpenClawHostConnection;
 }
 
+const DESKTOP_DEV_ORIGINS = new Set([
+  'http://127.0.0.1:5173',
+  'http://localhost:5173',
+]);
+
 export function buildApp(options: BuildAppOptions): FastifyInstance {
   const app = Fastify();
   const { hostConnection } = options;
+
+  void app.register(cors, {
+    methods: ['GET', 'HEAD', 'POST', 'PUT'],
+    origin(origin, callback) {
+      if (!origin || DESKTOP_DEV_ORIGINS.has(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(null, false);
+    },
+  });
 
   app.get(HEALTH_ROUTE, async () => createHealthResponse());
   app.get(PROJECTS_ROUTE, async () => {

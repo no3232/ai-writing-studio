@@ -13,6 +13,7 @@
   "dependencies": {
     "@ai-writing-studio/contracts": "workspace:*",
     "@ai-writing-studio/openclaw-adapter": "workspace:*",
+    "@fastify/cors": "^11.1.0",
     "fastify": "^5.2.1"
   }
 }
