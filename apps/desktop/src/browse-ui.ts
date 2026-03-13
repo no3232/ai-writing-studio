@@ -15,6 +15,8 @@ export interface BrowseState {
   documents: DocumentSummary[];
   selectedDocumentId?: string;
   documentDetail?: DocumentDetail;
+  draftTitle?: string;
+  draftContent?: string;
   error?: string;
 }
 
@@ -29,6 +31,9 @@ export interface BrowseController {
   loadProjects(): Promise<BrowseState>;
   selectProject(projectId: string): Promise<BrowseState>;
   selectDocument(documentId: string): Promise<BrowseState>;
+  createDocument(): Promise<BrowseState>;
+  updateDraft(draft: { title?: string; content?: string }): BrowseState;
+  saveDocument(): Promise<BrowseState>;
 }
 
 export interface MountBrowseUiOptions {
@@ -81,6 +86,21 @@ export function createBrowseController(options: CreateBrowseControllerOptions): 
     },
     async selectDocument(documentId) {
       return await selectDocument(documentId);
+    },
+    async createDocument() {
+      return await createDocument();
+    },
+    updateDraft(draft) {
+      state = {
+        ...state,
+        draftTitle: draft.title ?? state.draftTitle ?? '',
+        draftContent: draft.content ?? state.draftContent ?? '',
+      };
+
+      return state;
+    },
+    async saveDocument() {
+      return await saveDocument();
     },
   };
 
@@ -137,6 +157,86 @@ export function createBrowseController(options: CreateBrowseControllerOptions): 
         status: 'ready',
         selectedDocumentId: documentId,
         documentDetail: response.document,
+        draftTitle: response.document.title,
+        draftContent: response.document.content,
+      };
+
+      return state;
+    } catch (error) {
+      state = toFailedState(state, error);
+      return state;
+    }
+  }
+
+  async function createDocument(): Promise<BrowseState> {
+    const projectId = state.selectedProjectId;
+
+    if (!projectId) {
+      throw new Error('A project must be selected before creating a document');
+    }
+
+    state = {
+      ...state,
+      status: 'loading',
+      error: undefined,
+    };
+
+    try {
+      const response = await options.client.createDocument(projectId, {
+        id: 'untitled-document',
+        title: 'Untitled document',
+        kind: 'markdown',
+        content: '',
+      });
+      const documentSummary = toDocumentSummary(response.document);
+      state = {
+        ...state,
+        status: 'ready',
+        documents: [...state.documents, documentSummary],
+        selectedDocumentId: response.document.id,
+        documentDetail: response.document,
+        draftTitle: response.document.title,
+        draftContent: response.document.content,
+      };
+
+      return state;
+    } catch (error) {
+      state = toFailedState(state, error);
+      return state;
+    }
+  }
+
+  async function saveDocument(): Promise<BrowseState> {
+    const projectId = state.selectedProjectId;
+    const documentId = state.selectedDocumentId;
+    const documentDetail = state.documentDetail;
+
+    if (!projectId || !documentId || !documentDetail) {
+      throw new Error('A document must be selected before saving');
+    }
+
+    state = {
+      ...state,
+      status: 'loading',
+      error: undefined,
+    };
+
+    try {
+      const response = await options.client.updateDocument(projectId, documentId, {
+        title: state.draftTitle ?? documentDetail.title,
+        kind: documentDetail.kind,
+        content: state.draftContent ?? documentDetail.content,
+      });
+      const documentSummary = toDocumentSummary(response.document);
+      state = {
+        ...state,
+        status: 'ready',
+        documents: state.documents.map((item) =>
+          item.id === documentSummary.id ? documentSummary : item,
+        ),
+        documentDetail: response.document,
+        draftTitle: response.document.title,
+        draftContent: response.document.content,
       };
 
       return state;
@@ -166,6 +266,28 @@ export function mountBrowseUi(options: MountBrowseUiOptions): void {
         render();
       });
     }
+
+    const createButton = root.querySelector<HTMLButtonElement>('[data-action="create-document"]');
+    createButton?.addEventListener('click', async () => {
+      await controller.createDocument();
+      render();
+    });
+
+    const saveButton = root.querySelector<HTMLButtonElement>('[data-action="save-document"]');
+    saveButton?.addEventListener('click', async () => {
+      await controller.saveDocument();
+      render();
+    });
+
+    const titleInput = root.querySelector<HTMLInputElement>('[name="document-title"]');
+    titleInput?.addEventListener('input', () => {
+      controller.updateDraft({ title: titleInput.value });
+    });
+
+    const contentInput = root.querySelector<HTMLTextAreaElement>('[name="document-content"]');
+    contentInput?.addEventListener('input', () => {
+      controller.updateDraft({ content: contentInput.value });
+    });
   };
 
   void controller.loadProjects().then(render, render);
@@ -207,6 +329,9 @@ function renderDocumentList(state: BrowseState): string {
   return [
     '<section>',
     '<h2>Documents</h2>',
+    state.selectedProjectId
+      ? '<p><button type="button" data-action="create-document">New document</button></p>'
+      : '',
     '<ul style="list-style:none;padding:0;margin:0;display:grid;gap:8px;">',
     ...state.documents.map((document) =>
       `<li><button type="button" data-document-id="${escapeAttribute(document.id)}" aria-current="${String(
@@ -228,9 +353,15 @@ function renderDocumentDetail(state: BrowseState): string {
 
   return [
     '<section>',
-    `<h2>${escapeHtml(state.documentDetail.title)}</h2>`,
+    '<h2>Document</h2>',
     `<p>Kind: ${escapeHtml(state.documentDetail.kind)}</p>`,
-    `<pre>${escapeHtml(state.documentDetail.content)}</pre>`,
+    '<p><label>Title<br><input type="text" name="document-title" style="width:100%;box-sizing:border-box;" value="',
+    escapeAttribute(state.draftTitle ?? state.documentDetail.title),
+    '"></label></p>',
+    '<p><label>Content<br><textarea name="document-content" style="width:100%;min-height:320px;box-sizing:border-box;">',
+    escapeHtml(state.draftContent ?? state.documentDetail.content),
+    '</textarea></label></p>',
+    '<p><button type="button" data-action="save-document">Save</button></p>',
     '</section>',
   ].join('');
 }
@@ -240,6 +371,14 @@ function toFailedState(state: BrowseState, error: unknown): BrowseState {
     ...state,
     status: 'failed',
     error: error instanceof Error ? error.message : 'Unknown browse error',
+  };
+}
+
+function toDocumentSummary(document: DocumentDetail): DocumentSummary {
+  return {
+    id: document.id,
+    title: document.title,
+    kind: document.kind,
   };
 }
 

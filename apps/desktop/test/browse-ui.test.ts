@@ -41,6 +41,28 @@ function createClient(): BrowseClient {
         },
       };
     },
+    async createDocument(projectId, request) {
+      return {
+        projectId,
+        document: {
+          id: request.id,
+          title: request.title,
+          kind: request.kind,
+          content: request.content,
+        },
+      };
+    },
+    async updateDocument(projectId, documentId, request) {
+      return {
+        projectId,
+        document: {
+          id: documentId,
+          title: request.title,
+          kind: request.kind,
+          content: request.content,
+        },
+      };
+    },
   };
 }
 
@@ -64,6 +86,8 @@ test('browse controller loads projects and auto-selects the first project and do
       kind: 'markdown',
       content: 'project-a:outline:content',
     },
+    draftTitle: 'Outline',
+    draftContent: 'project-a:outline:content',
     error: undefined,
   });
 });
@@ -87,7 +111,104 @@ test('selecting a different project refreshes document list and document detail'
   });
 });
 
-test('renderBrowseView shows selected items and document content', () => {
+test('browse controller creates a new document in the selected project and selects it', async () => {
+  const createCalls: Array<{ projectId: string; request: { id: string; title: string; kind: string; content: string } }> = [];
+  const controller = createBrowseController({
+    client: {
+      ...createClient(),
+      async createDocument(projectId, request) {
+        createCalls.push({ projectId, request });
+        return {
+          projectId,
+          document: {
+            id: request.id,
+            title: request.title,
+            kind: request.kind,
+            content: request.content,
+          },
+        };
+      },
+    },
+  });
+
+  await controller.loadProjects();
+  await controller.createDocument();
+
+  assert.deepEqual(createCalls, [
+    {
+      projectId: 'project-a',
+      request: {
+        id: 'untitled-document',
+        title: 'Untitled document',
+        kind: 'markdown',
+        content: '',
+      },
+    },
+  ]);
+  assert.equal(controller.getState().selectedDocumentId, 'untitled-document');
+  assert.deepEqual(controller.getState().documents, [
+    { id: 'outline', title: 'Outline', kind: 'markdown' },
+    { id: 'untitled-document', title: 'Untitled document', kind: 'markdown' },
+  ]);
+  assert.deepEqual(controller.getState().documentDetail, {
+    id: 'untitled-document',
+    title: 'Untitled document',
+    kind: 'markdown',
+    content: '',
+  });
+});
+
+test('browse controller saves title and content changes for the selected document', async () => {
+  const updateCalls: Array<{
+    projectId: string;
+    documentId: string;
+    request: { title: string; kind: string; content: string };
+  }> = [];
+  const controller = createBrowseController({
+    client: {
+      ...createClient(),
+      async updateDocument(projectId, documentId, request) {
+        updateCalls.push({ projectId, documentId, request });
+        return {
+          projectId,
+          document: {
+            id: documentId,
+            title: request.title,
+            kind: request.kind,
+            content: request.content,
+          },
+        };
+      },
+    },
+  });
+
+  await controller.loadProjects();
+  controller.updateDraft({ title: 'Outline Revised', content: 'Updated outline copy.' });
+  await controller.saveDocument();
+
+  assert.deepEqual(updateCalls, [
+    {
+      projectId: 'project-a',
+      documentId: 'outline',
+      request: {
+        title: 'Outline Revised',
+        kind: 'markdown',
+        content: 'Updated outline copy.',
+      },
+    },
+  ]);
+  assert.deepEqual(controller.getState().documents, [
+    { id: 'outline', title: 'Outline Revised', kind: 'markdown' },
+  ]);
+  assert.deepEqual(controller.getState().documentDetail, {
+    id: 'outline',
+    title: 'Outline Revised',
+    kind: 'markdown',
+    content: 'Updated outline copy.',
+  });
+});
+
+test('renderBrowseView shows a create button and editable title/content fields for the selected document', () => {
   const html = renderBrowseView({
     status: 'ready',
     projects: [
@@ -103,11 +224,15 @@ test('renderBrowseView shows selected items and document content', () => {
       kind: 'chapter',
       content: '# Chapter 1',
     },
+    draftTitle: 'Chapter 1',
+    draftContent: '# Chapter 1',
   });
 
   assert.match(html, /<h1>Remote project browser<\/h1>/);
   assert.match(html, /Project B/);
   assert.match(html, /data-project-id="project-b" aria-current="true"/);
-  assert.match(html, /Chapter 1/);
-  assert.match(html, /<pre># Chapter 1<\/pre>/);
+  assert.match(html, /data-action="create-document"/);
+  assert.match(html, /name="document-title"/);
+  assert.match(html, /name="document-content"/);
+  assert.match(html, /data-action="save-document"/);
 });
