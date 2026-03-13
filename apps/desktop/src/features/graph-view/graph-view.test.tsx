@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { GraphView } from './graph-view';
 
 class ResizeObserverMock {
@@ -40,8 +40,7 @@ class ResizeObserverMock {
   disconnect() {}
 }
 
-globalThis.ResizeObserver = ResizeObserverMock as typeof ResizeObserver;
-globalThis.DOMMatrixReadOnly = class DOMMatrixReadOnlyMock {
+class DOMMatrixReadOnlyMock {
   m11 = 1;
 
   m22 = 1;
@@ -49,23 +48,146 @@ globalThis.DOMMatrixReadOnly = class DOMMatrixReadOnlyMock {
   m41 = 0;
 
   m42 = 0;
-} as typeof DOMMatrixReadOnly;
-Object.defineProperties(HTMLElement.prototype, {
-  offsetWidth: {
+}
+
+function getMockOffsetWidth(this: HTMLElement) {
+  return this.getAttribute('data-testid')?.startsWith('rf__node-') ? 120 : 640;
+}
+
+function getMockOffsetHeight(this: HTMLElement) {
+  return this.getAttribute('data-testid')?.startsWith('rf__node-') ? 48 : 320;
+}
+
+function restoreGlobalProperty(
+  key: 'ResizeObserver' | 'DOMMatrixReadOnly',
+  value: unknown,
+) {
+  const globalScope = globalThis as Record<string, unknown>;
+
+  if (typeof value === 'undefined') {
+    delete globalScope[key];
+    return;
+  }
+
+  globalScope[key] = value;
+}
+
+function restoreDescriptor(
+  target: object,
+  key: 'offsetWidth' | 'offsetHeight',
+  descriptor?: PropertyDescriptor,
+) {
+  if (!descriptor) {
+    delete (target as Record<string, unknown>)[key];
+    return;
+  }
+
+  Object.defineProperty(target, key, descriptor);
+}
+
+function installGraphViewJSDomMocks() {
+  const originalResizeObserver = globalThis.ResizeObserver;
+  const originalDOMMatrixReadOnly = globalThis.DOMMatrixReadOnly;
+  const originalOffsetWidthDescriptor = Object.getOwnPropertyDescriptor(
+    HTMLElement.prototype,
+    'offsetWidth',
+  );
+  const originalOffsetHeightDescriptor = Object.getOwnPropertyDescriptor(
+    HTMLElement.prototype,
+    'offsetHeight',
+  );
+
+  globalThis.ResizeObserver = ResizeObserverMock as typeof ResizeObserver;
+  globalThis.DOMMatrixReadOnly = DOMMatrixReadOnlyMock as typeof DOMMatrixReadOnly;
+  Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
     configurable: true,
-    get() {
-      return this.getAttribute('data-testid')?.startsWith('rf__node-') ? 120 : 640;
-    },
-  },
-  offsetHeight: {
+    get: getMockOffsetWidth,
+  });
+  Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
     configurable: true,
-    get() {
-      return this.getAttribute('data-testid')?.startsWith('rf__node-') ? 48 : 320;
-    },
-  },
+    get: getMockOffsetHeight,
+  });
+
+  return () => {
+    restoreGlobalProperty('ResizeObserver', originalResizeObserver);
+    restoreGlobalProperty('DOMMatrixReadOnly', originalDOMMatrixReadOnly);
+    restoreDescriptor(
+      HTMLElement.prototype,
+      'offsetWidth',
+      originalOffsetWidthDescriptor,
+    );
+    restoreDescriptor(
+      HTMLElement.prototype,
+      'offsetHeight',
+      originalOffsetHeightDescriptor,
+    );
+  };
+}
+
+describe('graph-view test setup', () => {
+  it('installs and restores React Flow jsdom mocks without leaking module globals', () => {
+    const originalResizeObserver = globalThis.ResizeObserver;
+    const originalDOMMatrixReadOnly = globalThis.DOMMatrixReadOnly;
+    const originalOffsetWidthDescriptor = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      'offsetWidth',
+    );
+    const originalOffsetHeightDescriptor = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      'offsetHeight',
+    );
+
+    expect(originalResizeObserver).not.toBe(
+      ResizeObserverMock as typeof ResizeObserver,
+    );
+    expect(originalDOMMatrixReadOnly).not.toBe(
+      DOMMatrixReadOnlyMock as typeof DOMMatrixReadOnly,
+    );
+    expect(originalOffsetWidthDescriptor?.get).not.toBe(getMockOffsetWidth);
+    expect(originalOffsetHeightDescriptor?.get).not.toBe(getMockOffsetHeight);
+
+    const restore = installGraphViewJSDomMocks();
+
+    try {
+      expect(globalThis.ResizeObserver).toBe(
+        ResizeObserverMock as typeof ResizeObserver,
+      );
+      expect(globalThis.DOMMatrixReadOnly).toBe(
+        DOMMatrixReadOnlyMock as typeof DOMMatrixReadOnly,
+      );
+      expect(
+        Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetWidth')?.get,
+      ).toBe(getMockOffsetWidth);
+      expect(
+        Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight')?.get,
+      ).toBe(getMockOffsetHeight);
+    } finally {
+      restore();
+    }
+
+    expect(globalThis.ResizeObserver).toBe(originalResizeObserver);
+    expect(globalThis.DOMMatrixReadOnly).toBe(originalDOMMatrixReadOnly);
+    expect(
+      Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetWidth')?.get,
+    ).toBe(originalOffsetWidthDescriptor?.get);
+    expect(
+      Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight')?.get,
+    ).toBe(originalOffsetHeightDescriptor?.get);
+  });
 });
 
 describe('GraphView', () => {
+  let restoreJSDomMocks: (() => void) | undefined;
+
+  beforeEach(() => {
+    restoreJSDomMocks = installGraphViewJSDomMocks();
+  });
+
+  afterEach(() => {
+    restoreJSDomMocks?.();
+    restoreJSDomMocks = undefined;
+  });
+
   it('renders a React Flow graph shell with nodes and edges', async () => {
     const { container } = render(
       <GraphView
