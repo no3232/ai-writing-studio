@@ -5,12 +5,12 @@ import { createStubOpenClawHost } from '@ai-writing-studio/openclaw-adapter';
 
 import { buildApp } from '../src/app.js';
 
-test('GET /health returns ok payload', async () => {
+test('GET /health returns contract payload', async () => {
   const app = buildApp({ hostConnection: createStubOpenClawHost() });
   const response = await app.inject({ method: 'GET', url: '/health' });
 
   assert.equal(response.statusCode, 200);
-  assert.deepEqual(response.json(), { status: 'ok' });
+  assert.deepEqual(response.json(), { status: 'ok', service: 'backend' });
 
   await app.close();
 });

@@ -4,8 +4,11 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "echo desktop build pending",
-    "test": "echo desktop test pending",
-    "typecheck": "echo desktop typecheck pending"
+    "build": "tsc -p tsconfig.json",
+    "test": "tsx --test test/**/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@ai-writing-studio/contracts": "workspace:*"
   }
 }

@@ -5,6 +5,7 @@ import {
   HEALTH_ROUTE,
   PROJECTS_ROUTE,
   createHealthResponse,
+  createHostConnectionConfig,
   createProjectListResponse,
 } from '../src/index.js';
 
@@ -14,7 +15,7 @@ test('exports minimal route constants', () => {
 });
 
 test('builds a health payload', () => {
-  assert.deepEqual(createHealthResponse(), { status: 'ok' });
+  assert.deepEqual(createHealthResponse(), { status: 'ok', service: 'backend' });
 });
 
 test('builds a project list payload', () => {
@@ -28,6 +29,19 @@ test('builds a project list payload', () => {
         { id: 'project-1', name: 'First Project' },
         { id: 'project-2', name: 'Second Project' },
       ],
+    },
+  );
+});
+
+test('builds a host connection config payload', () => {
+  assert.deepEqual(
+    createHostConnectionConfig({
+      backendUrl: 'http://localhost:3000',
+      token: 'secret-token',
+    }),
+    {
+      backendUrl: 'http://localhost:3000',
+      token: 'secret-token',
     },
   );
 });
