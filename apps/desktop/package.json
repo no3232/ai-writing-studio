@@ -3,12 +3,18 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "main": "dist/apps/desktop/src/main.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "start": "electron ./dist/apps/desktop/src/main.js",
+    "dev": "pnpm run build && pnpm run start",
     "test": "tsx --test test/**/*.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@ai-writing-studio/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "electron": "^35.0.0"
   }
 }
