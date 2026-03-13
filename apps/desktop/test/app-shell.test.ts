@@ -11,3 +11,11 @@ test('workbench shell renders top bar, navigation panel, editor panel, and ai pa
   assert.match(html, /Document/i);
   assert.match(html, /AI Workspace/i);
 });
+
+test('workbench shell uses shared card button and input primitives for major panels', () => {
+  const html = renderAppShell();
+
+  assert.match(html, /data-ui="card"/i);
+  assert.match(html, /data-ui="button"/i);
+  assert.match(html, /data-ui="input"/i);
+});

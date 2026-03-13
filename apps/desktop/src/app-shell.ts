@@ -5,7 +5,7 @@ import { renderTopBar } from './components/top-bar.js';
 
 export function renderAppShell(): string {
   return [
-    '<div data-region="workbench-shell" style="min-height:100vh;display:grid;grid-template-columns:260px minmax(0,1fr) 320px;grid-template-rows:auto minmax(0,1fr);font-family:Inter, system-ui, sans-serif;background:#ffffff;color:#0f172a;">',
+    '<div data-region="workbench-shell" class="ui-workbench">',
     renderTopBar(),
     renderNavigationPanel(),
     renderEditorPanel(),

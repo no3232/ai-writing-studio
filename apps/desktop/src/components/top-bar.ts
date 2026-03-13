@@ -1,11 +1,20 @@
+import { renderButton } from './ui/button.js';
+import { renderCard } from './ui/card.js';
+
 export function renderTopBar(): string {
-  return [
-    '<header data-region="top-bar" style="grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #d7dce5;background:#f8fafc;">',
-    '<div>',
-    '<strong>Top Bar</strong>',
-    '<div style="font-size:12px;color:#475569;">Desktop workbench shell</div>',
-    '</div>',
-    '<div style="font-size:12px;color:#64748b;">Chunk 1 skeleton</div>',
-    '</header>',
-  ].join('');
+  return renderCard({
+    className: 'ui-top-bar',
+    contentClassName: 'ui-row',
+    content: [
+      '<div>',
+      '<p class="ui-kicker">Workbench</p>',
+      '<strong>Top Bar</strong>',
+      '<p class="ui-text-muted">Desktop workbench shell with a minimal shadcn/ui-style baseline.</p>',
+      '</div>',
+      '<div class="ui-row">',
+      renderButton({ label: 'Sync status', variant: 'secondary' }),
+      renderButton({ label: 'Share', variant: 'ghost' }),
+      '</div>',
+    ].join(''),
+  });
 }

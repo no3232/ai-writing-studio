@@ -1,3 +1,5 @@
+import './styles.css';
+
 import { bootstrapBrowseRenderer } from './renderer.js';
 import { mountAppShell } from './app-shell.js';
 

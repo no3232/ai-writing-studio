@@ -1,0 +1,166 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --muted: #64748b;
+  --muted-surface: #f1f5f9;
+  --border: rgba(15, 23, 42, 0.12);
+  --card: rgba(255, 255, 255, 0.92);
+  --accent: #2563eb;
+  --accent-foreground: #eff6ff;
+  --ring: rgba(37, 99, 235, 0.3);
+  --shadow: 0 20px 45px -28px rgba(15, 23, 42, 0.45);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(circle at top, rgba(96, 165, 250, 0.16), transparent 32%),
+    var(--background);
+  color: var(--foreground);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.ui-workbench {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr) 320px;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px;
+}
+
+.ui-top-bar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ui-panel-stack {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.ui-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+.ui-card__header {
+  padding: 18px 20px 0;
+}
+
+.ui-card__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.ui-card__description {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.ui-card__content {
+  padding: 18px 20px 20px;
+}
+
+.ui-button {
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ui-button--default {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.ui-button--secondary {
+  background: var(--muted-surface);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+.ui-button--ghost {
+  background: transparent;
+  color: var(--muted);
+}
+
+.ui-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 10px 12px;
+  color: var(--foreground);
+}
+
+.ui-input:focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.ui-kicker {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ui-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ui-column {
+  display: grid;
+  gap: 12px;
+}
+
+.ui-text-muted {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.ui-legacy-root {
+  min-height: 320px;
+}
