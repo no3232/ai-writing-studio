@@ -12,11 +12,13 @@ describe('buildWorkspaceIndex', () => {
     const documents = await loadWorkspace(workspacePath);
     const index = buildWorkspaceIndex(documents);
 
-    expect(documents).toHaveLength(5);
+    expect(documents).toHaveLength(6);
+    expect(index.byId.get('chapter-01')?.type).toBe('chapter');
     expect(index.byId.get('rule-magic-oath')?.type).toBe('rule');
     expect(index.byType.get('character')?.map((document) => document.id)).toEqual([
       'character-borin',
       'character-kira',
     ]);
+    expect(index.byType.get('chapter')?.map((document) => document.id)).toEqual(['chapter-01']);
   });
 });
