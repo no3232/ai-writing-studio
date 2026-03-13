@@ -4,8 +4,15 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "echo backend build pending",
-    "test": "echo backend test pending",
-    "typecheck": "echo backend typecheck pending"
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/apps/backend/src/server.js",
+    "test": "tsx --test test/**/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@ai-writing-studio/contracts": "workspace:*",
+    "@ai-writing-studio/openclaw-adapter": "workspace:*",
+    "fastify": "^5.2.1"
   }
 }

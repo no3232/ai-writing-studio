@@ -8,6 +8,11 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["node"]
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@ai-writing-studio/contracts": ["packages/contracts/src/index.ts"],
+      "@ai-writing-studio/openclaw-adapter": ["packages/openclaw-adapter/src/index.ts"]
+    }
   }
 }
