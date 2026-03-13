@@ -46,7 +46,6 @@ export function GraphView({
     <section aria-label="Graph view">
       <header>
         <h1>{graphTitle}</h1>
-        <button type="button">Save</button>
       </header>
 
       <div

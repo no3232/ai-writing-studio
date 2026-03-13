@@ -81,7 +81,7 @@ describe('GraphView', () => {
     );
 
     expect(screen.getByRole('heading', { name: 'Story Graph' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Save' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Save' })).toBeNull();
 
     const graphArea = screen.getByTestId('graph-view-area');
 
