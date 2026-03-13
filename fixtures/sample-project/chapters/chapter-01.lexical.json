@@ -1,0 +1,31 @@
+{
+  "root": {
+    "type": "root",
+    "format": "",
+    "indent": 0,
+    "version": 1,
+    "children": [
+      {
+        "type": "paragraph",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "text",
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": "Kira stepped into the dueling circle before dawn and heard the oath bells answer her name.",
+            "version": 1
+          }
+        ],
+        "direction": "ltr",
+        "textFormat": 0,
+        "textStyle": ""
+      }
+    ],
+    "direction": "ltr"
+  }
+}
