@@ -5,11 +5,11 @@
   "type": "module",
   "main": "dist/apps/desktop/src/main.js",
   "scripts": {
-    "build": "corepack pnpm run build:main && corepack pnpm run build:renderer",
+    "build": "pnpm run build:main && pnpm run build:renderer",
     "build:main": "tsc -p tsconfig.json",
     "build:renderer": "vite build",
     "start": "electron ./dist/apps/desktop/src/main.js",
-    "dev": "sh -c \"corepack pnpm run build:main && (corepack pnpm run dev:renderer > /tmp/ai-writing-studio-desktop-vite.log 2>&1 & vite_pid=$!; trap 'if [ -n \\\"$vite_pid\\\" ]; then kill $vite_pid 2>/dev/null || true; fi' EXIT; sleep 2; DESKTOP_RENDERER_DEV_URL=http://127.0.0.1:5173 corepack pnpm run dev:electron)\"",
+    "dev": "sh -c \"pnpm run build:main && (pnpm run dev:renderer > /tmp/ai-writing-studio-desktop-vite.log 2>&1 & vite_pid=$!; trap 'if [ -n \\\"$vite_pid\\\" ]; then kill $vite_pid 2>/dev/null || true; fi' EXIT; sleep 2; DESKTOP_RENDERER_DEV_URL=http://127.0.0.1:5173 pnpm run dev:electron)\"",
     "dev:electron": "electron ./dist/apps/desktop/src/main.js",
     "dev:renderer": "vite --host 127.0.0.1 --strictPort",
     "test": "tsx --test test/**/*.test.ts",
