@@ -5,21 +5,34 @@ import type { BrowserWindow } from 'electron';
 
 import {
   createDesktopWindowOptions,
-  resolveDesktopIndexPath,
   resolveDesktopPreloadPath,
+  resolveDesktopRendererTarget,
 } from './shell.js';
 
 const { BrowserWindow: ElectronBrowserWindow, app } = electron;
 
-export async function createDesktopWindow(browserWindow: typeof ElectronBrowserWindow = ElectronBrowserWindow): Promise<BrowserWindow> {
-  const mainModulePath = fileURLToPath(import.meta.url);
+export interface CreateDesktopWindowOptions {
+  mainModulePath?: string;
+  devServerUrl?: string;
+}
+
+export async function createDesktopWindow(
+  browserWindow: typeof ElectronBrowserWindow = ElectronBrowserWindow,
+  options: CreateDesktopWindowOptions = {},
+): Promise<BrowserWindow> {
+  const mainModulePath = options.mainModulePath ?? fileURLToPath(import.meta.url);
   const window = new browserWindow(createDesktopWindowOptions(resolveDesktopPreloadPath(mainModulePath)));
+  const rendererTarget = resolveDesktopRendererTarget(mainModulePath, options.devServerUrl);
 
   window.once('ready-to-show', () => {
     window.show();
   });
 
-  await window.loadFile(resolveDesktopIndexPath(mainModulePath));
+  if (rendererTarget.kind === 'url') {
+    await window.loadURL(rendererTarget.target);
+  } else {
+    await window.loadFile(rendererTarget.target);
+  }
 
   return window;
 }
@@ -35,12 +48,14 @@ async function bootstrapDesktopApp(): Promise<void> {
   });
 }
 
-if (!app.isReady()) {
-  void bootstrapDesktopApp();
-}
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
+if (app) {
+  if (!app.isReady()) {
+    void bootstrapDesktopApp();
   }
-});
+
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
+}

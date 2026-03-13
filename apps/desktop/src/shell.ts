@@ -10,6 +10,10 @@ const WINDOW_MIN_WIDTH = 960;
 const WINDOW_MIN_HEIGHT = 640;
 const WINDOW_BACKGROUND = '#111827';
 
+export type DesktopRendererTarget =
+  | { kind: 'url'; target: string }
+  | { kind: 'file'; target: string };
+
 export function createDesktopWindowOptions(preloadPath: string): BrowserWindowConstructorOptions {
   return {
     width: WINDOW_WIDTH,
@@ -27,8 +31,26 @@ export function createDesktopWindowOptions(preloadPath: string): BrowserWindowCo
   };
 }
 
+export function getDesktopRendererDevUrl(): string | undefined {
+  return process.env.DESKTOP_RENDERER_DEV_URL;
+}
+
+export function resolveDesktopRendererTarget(mainModulePath: string, devServerUrl = getDesktopRendererDevUrl()): DesktopRendererTarget {
+  if (devServerUrl) {
+    return {
+      kind: 'url',
+      target: devServerUrl,
+    };
+  }
+
+  return {
+    kind: 'file',
+    target: resolveDesktopIndexPath(mainModulePath),
+  };
+}
+
 export function resolveDesktopIndexPath(mainModulePath: string): string {
-  return path.resolve(dirname(mainModulePath), '../../../../index.html');
+  return path.resolve(dirname(mainModulePath), '../index.html');
 }
 
 export function resolveDesktopPreloadPath(mainModulePath: string): string {
