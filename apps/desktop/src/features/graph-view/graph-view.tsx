@@ -1,3 +1,6 @@
+import ReactFlow, { type Edge, type Node } from 'reactflow';
+import 'reactflow/dist/style.css';
+
 interface GraphViewNode {
   id: string;
   label: string;
@@ -15,8 +18,20 @@ interface GraphViewProps {
   edges: GraphViewEdge[];
 }
 
-function formatCount(count: number, singular: string, plural: string) {
-  return `${count} ${count === 1 ? singular : plural}`;
+function toFlowNodes(nodes: GraphViewNode[]): Node[] {
+  return nodes.map((node, index) => ({
+    id: node.id,
+    data: { label: node.label },
+    position: { x: index * 180, y: 48 },
+  }));
+}
+
+function toFlowEdges(edges: GraphViewEdge[]): Edge[] {
+  return edges.map((edge) => ({
+    id: edge.id,
+    source: edge.source,
+    target: edge.target,
+  }));
 }
 
 export function GraphView({
@@ -24,6 +39,9 @@ export function GraphView({
   nodes,
   edges,
 }: GraphViewProps) {
+  const flowNodes = toFlowNodes(nodes);
+  const flowEdges = toFlowEdges(edges);
+
   return (
     <section aria-label="Graph view">
       <header>
@@ -33,11 +51,18 @@ export function GraphView({
 
       <div
         data-testid="graph-view-area"
-        data-graph-shell="react-flow-ready"
+        aria-label="Graph canvas"
+        style={{ height: 320 }}
       >
-        <p>Graph canvas</p>
-        <p>{formatCount(nodes.length, 'node', 'nodes')}</p>
-        <p>{formatCount(edges.length, 'edge', 'edges')}</p>
+        <ReactFlow
+          nodes={flowNodes}
+          edges={flowEdges}
+          fitView
+          nodesDraggable={false}
+          nodesConnectable={false}
+          elementsSelectable={false}
+          proOptions={{ hideAttribution: true }}
+        />
       </div>
     </section>
   );
