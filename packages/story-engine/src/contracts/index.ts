@@ -4,5 +4,6 @@ export const simulationContextName = 'simulation';
 export const validationContextName = 'validation';
 
 export * from './plot-proposal';
+export * from './provider-adapter';
 export * from './scene-suggestion';
 export * from './validation-finding';
