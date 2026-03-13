@@ -1,4 +1,10 @@
-import type { DocumentDetail, DocumentSummary, ProjectSummary } from '@ai-writing-studio/contracts';
+import type {
+  DocumentCreateRequest,
+  DocumentDetail,
+  DocumentSummary,
+  DocumentUpdateRequest,
+  ProjectSummary,
+} from '@ai-writing-studio/contracts';
 
 export type OpenClawHostStatus = 'connected' | 'disconnected';
 export type HostProjectSummary = ProjectSummary;
@@ -10,6 +16,15 @@ export interface OpenClawHostConnection {
   listProjects(): Promise<HostProjectSummary[]>;
   listDocuments(projectId: string): Promise<HostDocumentSummary[] | undefined>;
   getDocument(projectId: string, documentId: string): Promise<HostDocumentDetail | undefined>;
+  createDocument(
+    projectId: string,
+    request: DocumentCreateRequest,
+  ): Promise<HostDocumentDetail | undefined>;
+  updateDocument(
+    projectId: string,
+    documentId: string,
+    request: DocumentUpdateRequest,
+  ): Promise<HostDocumentDetail | undefined>;
 }
 
 const STUB_PROJECTS: HostProjectSummary[] = [{
@@ -36,6 +51,17 @@ const STUB_DOCUMENTS: Record<string, HostDocumentDetail[]> = {
 };
 
 class StubOpenClawHostConnection implements OpenClawHostConnection {
+  private readonly documents: Record<string, HostDocumentDetail[]>;
+
+  constructor() {
+    this.documents = Object.fromEntries(
+      Object.entries(STUB_DOCUMENTS).map(([projectId, documents]) => [
+        projectId,
+        documents.map((document) => ({ ...document })),
+      ]),
+    );
+  }
+
   async getStatus(): Promise<OpenClawHostStatus> {
     return 'disconnected';
   }
@@ -45,13 +71,50 @@ class StubOpenClawHostConnection implements OpenClawHostConnection {
   }
 
   async listDocuments(projectId: string): Promise<HostDocumentSummary[] | undefined> {
-    const documents = STUB_DOCUMENTS[projectId];
+    const documents = this.documents[projectId];
 
     return documents?.map(({ id, title, kind }) => ({ id, title, kind }));
   }
 
   async getDocument(projectId: string, documentId: string): Promise<HostDocumentDetail | undefined> {
-    return STUB_DOCUMENTS[projectId]?.find((document) => document.id === documentId);
+    return this.documents[projectId]?.find((document) => document.id === documentId);
+  }
+
+  async createDocument(
+    projectId: string,
+    request: DocumentCreateRequest,
+  ): Promise<HostDocumentDetail | undefined> {
+    const documents = this.documents[projectId];
+
+    if (!documents) {
+      return undefined;
+    }
+
+    const document = { ...request };
+    documents.push(document);
+
+    return document;
+  }
+
+  async updateDocument(
+    projectId: string,
+    documentId: string,
+    request: DocumentUpdateRequest,
+  ): Promise<HostDocumentDetail | undefined> {
+    const documents = this.documents[projectId];
+    const index = documents?.findIndex((document) => document.id === documentId) ?? -1;
+
+    if (!documents || index < 0) {
+      return undefined;
+    }
+
+    const updatedDocument = {
+      id: documentId,
+      ...request,
+    };
+    documents[index] = updatedDocument;
+
+    return updatedDocument;
   }
 }
 

@@ -82,6 +82,59 @@ test('GET /projects/:projectId/documents/:documentId returns a document detail p
   await app.close();
 });
 
+test('POST /projects/:projectId/documents creates a document detail payload', async () => {
+  const app = buildApp({ hostConnection: createStubOpenClawHost() });
+  const response = await app.inject({
+    method: 'POST',
+    url: '/projects/demo-project/documents',
+    payload: {
+      id: 'chapter-2',
+      title: 'Chapter 2',
+      kind: 'chapter',
+      content: 'Fresh pages.',
+    },
+  });
+
+  assert.equal(response.statusCode, 201);
+  assert.deepEqual(response.json(), {
+    projectId: 'demo-project',
+    document: {
+      id: 'chapter-2',
+      title: 'Chapter 2',
+      kind: 'chapter',
+      content: 'Fresh pages.',
+    },
+  });
+
+  await app.close();
+});
+
+test('PUT /projects/:projectId/documents/:documentId updates a document detail payload', async () => {
+  const app = buildApp({ hostConnection: createStubOpenClawHost() });
+  const response = await app.inject({
+    method: 'PUT',
+    url: '/projects/demo-project/documents/chapter-1',
+    payload: {
+      title: 'Chapter 1 Revised',
+      kind: 'chapter',
+      content: 'Updated copy.',
+    },
+  });
+
+  assert.equal(response.statusCode, 200);
+  assert.deepEqual(response.json(), {
+    projectId: 'demo-project',
+    document: {
+      id: 'chapter-1',
+      title: 'Chapter 1 Revised',
+      kind: 'chapter',
+      content: 'Updated copy.',
+    },
+  });
+
+  await app.close();
+});
+
 test('GET /projects/:projectId/documents/:documentId returns 404 for unknown documents', async () => {
   const app = buildApp({ hostConnection: createStubOpenClawHost() });
   const response = await app.inject({
@@ -93,6 +146,37 @@ test('GET /projects/:projectId/documents/:documentId returns 404 for unknown doc
   assert.deepEqual(response.json(), {
     message: 'Document not found',
   });
+
+  await app.close();
+});
+
+test('write document routes return 404 when the project or document is missing', async () => {
+  const app = buildApp({ hostConnection: createStubOpenClawHost() });
+
+  const createResponse = await app.inject({
+    method: 'POST',
+    url: '/projects/missing-project/documents',
+    payload: {
+      id: 'chapter-2',
+      title: 'Chapter 2',
+      kind: 'chapter',
+      content: 'Fresh pages.',
+    },
+  });
+  const updateResponse = await app.inject({
+    method: 'PUT',
+    url: '/projects/demo-project/documents/missing-document',
+    payload: {
+      title: 'Chapter 1 Revised',
+      kind: 'chapter',
+      content: 'Updated copy.',
+    },
+  });
+
+  assert.equal(createResponse.statusCode, 404);
+  assert.deepEqual(createResponse.json(), { message: 'Project not found' });
+  assert.equal(updateResponse.statusCode, 404);
+  assert.deepEqual(updateResponse.json(), { message: 'Document not found' });
 
   await app.close();
 });

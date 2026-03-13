@@ -2,12 +2,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  DOCUMENT_CREATE_ROUTE,
   DOCUMENT_DETAIL_ROUTE,
   DOCUMENTS_ROUTE,
+  DOCUMENT_UPDATE_ROUTE,
   HEALTH_ROUTE,
   PROJECTS_ROUTE,
+  createDocumentCreateRequest,
+  createDocumentCreateResponse,
   createDocumentDetailResponse,
   createDocumentListResponse,
+  createDocumentUpdateRequest,
+  createDocumentUpdateResponse,
   createHealthResponse,
   createHostConnectionConfig,
   createProjectListResponse,
@@ -17,7 +23,9 @@ test('exports minimal route constants', () => {
   assert.equal(HEALTH_ROUTE, '/health');
   assert.equal(PROJECTS_ROUTE, '/projects');
   assert.equal(DOCUMENTS_ROUTE, '/projects/:projectId/documents');
+  assert.equal(DOCUMENT_CREATE_ROUTE, '/projects/:projectId/documents');
   assert.equal(DOCUMENT_DETAIL_ROUTE, '/projects/:projectId/documents/:documentId');
+  assert.equal(DOCUMENT_UPDATE_ROUTE, '/projects/:projectId/documents/:documentId');
 });
 
 test('builds a health payload', () => {
@@ -73,6 +81,80 @@ test('builds a document detail payload', () => {
         title: 'Outline',
         kind: 'markdown',
         content: '# Outline',
+      },
+    },
+  );
+});
+
+test('builds document create request and response payloads', () => {
+  assert.deepEqual(
+    createDocumentCreateRequest({
+      id: 'chapter-2',
+      title: 'Chapter 2',
+      kind: 'chapter',
+      content: 'A new scene opens.',
+    }),
+    {
+      id: 'chapter-2',
+      title: 'Chapter 2',
+      kind: 'chapter',
+      content: 'A new scene opens.',
+    },
+  );
+
+  assert.deepEqual(
+    createDocumentCreateResponse({
+      projectId: 'project-1',
+      document: {
+        id: 'chapter-2',
+        title: 'Chapter 2',
+        kind: 'chapter',
+        content: 'A new scene opens.',
+      },
+    }),
+    {
+      projectId: 'project-1',
+      document: {
+        id: 'chapter-2',
+        title: 'Chapter 2',
+        kind: 'chapter',
+        content: 'A new scene opens.',
+      },
+    },
+  );
+});
+
+test('builds document update request and response payloads', () => {
+  assert.deepEqual(
+    createDocumentUpdateRequest({
+      title: 'Chapter 1 Revised',
+      kind: 'chapter',
+      content: 'Updated copy.',
+    }),
+    {
+      title: 'Chapter 1 Revised',
+      kind: 'chapter',
+      content: 'Updated copy.',
+    },
+  );
+
+  assert.deepEqual(
+    createDocumentUpdateResponse({
+      projectId: 'project-1',
+      document: {
+        id: 'chapter-1',
+        title: 'Chapter 1 Revised',
+        kind: 'chapter',
+        content: 'Updated copy.',
+      },
+    }),
+    {
+      projectId: 'project-1',
+      document: {
+        id: 'chapter-1',
+        title: 'Chapter 1 Revised',
+        kind: 'chapter',
+        content: 'Updated copy.',
       },
     },
   );
