@@ -6,18 +6,15 @@ import {
   createHealthResponse,
   createProjectListResponse,
 } from '@ai-writing-studio/contracts';
-import {
-  createStubOpenClawHost,
-  type OpenClawHostConnection,
-} from '@ai-writing-studio/openclaw-adapter';
+import { type OpenClawHostConnection } from '@ai-writing-studio/openclaw-adapter';
 
 export interface BuildAppOptions {
-  hostConnection?: OpenClawHostConnection;
+  hostConnection: OpenClawHostConnection;
 }
 
-export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
+export function buildApp(options: BuildAppOptions): FastifyInstance {
   const app = Fastify();
-  const hostConnection = options.hostConnection ?? createStubOpenClawHost();
+  const { hostConnection } = options;
 
   app.get(HEALTH_ROUTE, async () => createHealthResponse());
   app.get(PROJECTS_ROUTE, async () => {

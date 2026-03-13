@@ -1,9 +1,7 @@
-export type OpenClawHostStatus = 'connected' | 'disconnected';
+import type { ProjectSummary } from '@ai-writing-studio/contracts';
 
-export interface HostProjectSummary {
-  id: string;
-  name: string;
-}
+export type OpenClawHostStatus = 'connected' | 'disconnected';
+export type HostProjectSummary = ProjectSummary;
 
 export interface OpenClawHostConnection {
   getStatus(): Promise<OpenClawHostStatus>;

@@ -4,7 +4,10 @@
     "outDir": "dist",
     "rootDir": "src",
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "paths": {
+      "@ai-writing-studio/contracts": ["packages/contracts/dist/index.d.ts"]
+    }
   },
   "include": ["src/**/*.ts"]
 }
