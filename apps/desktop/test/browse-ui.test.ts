@@ -73,6 +73,7 @@ test('browse controller loads projects and auto-selects the first project and do
 
   assert.deepEqual(controller.getState(), {
     status: 'ready',
+    saveState: 'idle',
     projects: [
       { id: 'project-a', name: 'Project A' },
       { id: 'project-b', name: 'Project B' },
@@ -158,33 +159,58 @@ test('browse controller creates a new document in the selected project and selec
   });
 });
 
-test('browse controller saves title and content changes for the selected document', async () => {
+test('browse controller marks the draft dirty after the selected document changes', async () => {
+  const controller = createBrowseController({ client: createClient() });
+
+  await controller.loadProjects();
+  controller.updateDraft({ title: 'Outline Revised' });
+
+  assert.equal(controller.getState().saveState, 'dirty');
+});
+
+test('browse controller exposes saving state during save and saved state after a successful save', async () => {
   const updateCalls: Array<{
     projectId: string;
     documentId: string;
     request: { title: string; kind: string; content: string };
   }> = [];
+  let resolveSave: ((value: {
+    projectId: string;
+    document: { id: string; title: string; kind: string; content: string };
+  }) => void) | undefined;
+  const saveSettled = new Promise<{
+    projectId: string;
+    document: { id: string; title: string; kind: string; content: string };
+  }>((resolve) => {
+    resolveSave = resolve;
+  });
+
   const controller = createBrowseController({
     client: {
       ...createClient(),
-      async updateDocument(projectId, documentId, request) {
+      updateDocument(projectId, documentId, request) {
         updateCalls.push({ projectId, documentId, request });
-        return {
-          projectId,
-          document: {
-            id: documentId,
-            title: request.title,
-            kind: request.kind,
-            content: request.content,
-          },
-        };
+        return saveSettled;
       },
     },
   });
 
   await controller.loadProjects();
   controller.updateDraft({ title: 'Outline Revised', content: 'Updated outline copy.' });
-  await controller.saveDocument();
+
+  const savePromise = controller.saveDocument();
+  assert.equal(controller.getState().saveState, 'saving');
+
+  resolveSave?.({
+    projectId: 'project-a',
+    document: {
+      id: 'outline',
+      title: 'Outline Revised',
+      kind: 'markdown',
+      content: 'Updated outline copy.',
+    },
+  });
+  await savePromise;
 
   assert.deepEqual(updateCalls, [
     {
@@ -197,6 +223,7 @@ test('browse controller saves title and content changes for the selected documen
       },
     },
   ]);
+  assert.equal(controller.getState().saveState, 'saved');
   assert.deepEqual(controller.getState().documents, [
     { id: 'outline', title: 'Outline Revised', kind: 'markdown' },
   ]);
@@ -208,9 +235,53 @@ test('browse controller saves title and content changes for the selected documen
   });
 });
 
+test('browse controller exposes failed save state when saving the selected document fails', async () => {
+  const controller = createBrowseController({
+    client: {
+      ...createClient(),
+      async updateDocument() {
+        throw new Error('Save failed');
+      },
+    },
+  });
+
+  await controller.loadProjects();
+  controller.updateDraft({ title: 'Outline Revised' });
+  await controller.saveDocument();
+
+  assert.equal(controller.getState().status, 'failed');
+  assert.equal(controller.getState().saveState, 'failed');
+  assert.equal(controller.getState().error, 'Save failed');
+});
+
+test('renderBrowseView shows the current save state for the selected document', () => {
+  const html = renderBrowseView({
+    status: 'ready',
+    saveState: 'dirty',
+    projects: [
+      { id: 'project-a', name: 'Project A' },
+      { id: 'project-b', name: 'Project B' },
+    ],
+    selectedProjectId: 'project-b',
+    documents: [{ id: 'chapter-1', title: 'Chapter 1', kind: 'chapter' }],
+    selectedDocumentId: 'chapter-1',
+    documentDetail: {
+      id: 'chapter-1',
+      title: 'Chapter 1',
+      kind: 'chapter',
+      content: '# Chapter 1',
+    },
+    draftTitle: 'Chapter 1',
+    draftContent: '# Chapter 1',
+  });
+
+  assert.match(html, /Save state: dirty/);
+});
+
 test('renderBrowseView shows a create button and editable title/content fields for the selected document', () => {
   const html = renderBrowseView({
     status: 'ready',
+    saveState: 'idle',
     projects: [
       { id: 'project-a', name: 'Project A' },
       { id: 'project-b', name: 'Project B' },

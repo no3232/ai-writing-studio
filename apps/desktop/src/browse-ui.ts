@@ -7,9 +7,11 @@ import type {
 import { createProjectsClient, type CreateProjectsClientOptions, type ProjectsClient } from './project-documents.js';
 
 export type BrowseStatus = 'idle' | 'loading' | 'ready' | 'failed';
+export type SaveState = 'idle' | 'dirty' | 'saving' | 'saved' | 'failed';
 
 export interface BrowseState {
   status: BrowseStatus;
+  saveState: SaveState;
   projects: ProjectSummary[];
   selectedProjectId?: string;
   documents: DocumentSummary[];
@@ -48,6 +50,7 @@ export function createBrowseClient(options: CreateProjectsClientOptions): Browse
 export function createBrowseController(options: CreateBrowseControllerOptions): BrowseController {
   let state: BrowseState = {
     status: 'idle',
+    saveState: 'idle',
     projects: [],
     documents: [],
   };
@@ -67,6 +70,7 @@ export function createBrowseController(options: CreateBrowseControllerOptions): 
         const { projects } = await options.client.listProjects();
         state = {
           status: 'ready',
+          saveState: 'idle',
           projects,
           documents: [],
         };
@@ -91,10 +95,15 @@ export function createBrowseController(options: CreateBrowseControllerOptions): 
       return await createDocument();
     },
     updateDraft(draft) {
+      const nextTitle = draft.title ?? state.draftTitle ?? '';
+      const nextContent = draft.content ?? state.draftContent ?? '';
+      const saveState = isDraftDirty(state, nextTitle, nextContent) ? 'dirty' : 'idle';
+
       state = {
         ...state,
-        draftTitle: draft.title ?? state.draftTitle ?? '',
-        draftContent: draft.content ?? state.draftContent ?? '',
+        draftTitle: nextTitle,
+        draftContent: nextContent,
+        saveState,
       };
 
       return state;
@@ -108,6 +117,7 @@ export function createBrowseController(options: CreateBrowseControllerOptions): 
     state = {
       ...state,
       status: 'loading',
+      saveState: 'idle',
       selectedProjectId: projectId,
       selectedDocumentId: undefined,
       documents: [],
@@ -120,6 +130,7 @@ export function createBrowseController(options: CreateBrowseControllerOptions): 
       state = {
         ...state,
         status: 'ready',
+        saveState: 'idle',
         selectedProjectId: projectId,
         documents,
       };
@@ -145,6 +156,7 @@ export function createBrowseController(options: CreateBrowseControllerOptions): 
     state = {
       ...state,
       status: 'loading',
+      saveState: 'idle',
       selectedDocumentId: documentId,
       documentDetail: undefined,
       error: undefined,
@@ -155,6 +167,7 @@ export function createBrowseController(options: CreateBrowseControllerOptions): 
       state = {
         ...state,
         status: 'ready',
+        saveState: 'idle',
         selectedDocumentId: documentId,
         documentDetail: response.document,
         draftTitle: response.document.title,
@@ -178,6 +191,7 @@ export function createBrowseController(options: CreateBrowseControllerOptions): 
     state = {
       ...state,
       status: 'loading',
+      saveState: 'idle',
       error: undefined,
     };
 
@@ -192,6 +206,7 @@ export function createBrowseController(options: CreateBrowseControllerOptions): 
       state = {
         ...state,
         status: 'ready',
+        saveState: 'idle',
         documents: [...state.documents, documentSummary],
         selectedDocumentId: response.document.id,
         documentDetail: response.document,
@@ -218,6 +233,7 @@ export function createBrowseController(options: CreateBrowseControllerOptions): 
     state = {
       ...state,
       status: 'loading',
+      saveState: 'saving',
       error: undefined,
     };
 
@@ -231,6 +247,7 @@ export function createBrowseController(options: CreateBrowseControllerOptions): 
       state = {
         ...state,
         status: 'ready',
+        saveState: 'saved',
         documents: state.documents.map((item) =>
           item.id === documentSummary.id ? documentSummary : item,
         ),
@@ -300,6 +317,7 @@ export function renderBrowseView(state: BrowseState): string {
     '<header style="grid-column:1 / -1;">',
     '<h1>Remote project browser</h1>',
     `<p>Status: ${escapeHtml(state.status)}</p>`,
+    `<p>Save state: ${escapeHtml(state.saveState)}</p>`,
     state.error ? `<p style="color:#b00020;">${escapeHtml(state.error)}</p>` : '',
     '</header>',
     renderProjectList(state),
@@ -355,6 +373,7 @@ function renderDocumentDetail(state: BrowseState): string {
     '<section>',
     '<h2>Document</h2>',
     `<p>Kind: ${escapeHtml(state.documentDetail.kind)}</p>`,
+    `<p>Save state: ${escapeHtml(state.saveState)}</p>`,
     '<p><label>Title<br><input type="text" name="document-title" style="width:100%;box-sizing:border-box;" value="',
     escapeAttribute(state.draftTitle ?? state.documentDetail.title),
     '"></label></p>',
@@ -370,8 +389,17 @@ function toFailedState(state: BrowseState, error: unknown): BrowseState {
   return {
     ...state,
     status: 'failed',
+    saveState: state.saveState === 'saving' ? 'failed' : state.saveState,
     error: error instanceof Error ? error.message : 'Unknown browse error',
   };
+}
+
+function isDraftDirty(state: BrowseState, title: string, content: string): boolean {
+  if (!state.documentDetail) {
+    return false;
+  }
+
+  return title !== state.documentDetail.title || content !== state.documentDetail.content;
 }
 
 function toDocumentSummary(document: DocumentDetail): DocumentSummary {
