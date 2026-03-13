@@ -7,8 +7,13 @@ const config = {
   root: rootDir,
   publicDir: false,
   build: {
-    outDir: resolve(rootDir, 'dist/renderer'),
-    emptyOutDir: true,
+    outDir: resolve(rootDir, 'dist/apps/desktop'),
+    emptyOutDir: false,
+  },
+  server: {
+    host: '127.0.0.1',
+    port: 5173,
+    strictPort: true,
   },
 };
 
